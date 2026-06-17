@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: dropbox-referral-booster
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    rootDir: .
+    buildCommand: |
+      npm install --no-audit --no-fund
+      cd mini-services/referral-worker && npm install --no-audit --no-fund && cd ../..
+      npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: NEXT_PUBLIC_WORKER_URL
+        sync: false
+      - key: DATABASE_URL
+        value: file:/data/db/custom.db
+    disk:
+      name: db-storage
+      mountPath: /data
+      sizeGB: 1
+  - type: worker
+    name: dropbox-referral-worker
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    rootDir: mini-services/referral-worker
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: npm run start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10001
+      - key: DATABASE_URL
+        value: file:/data/db/custom.db
+    disk:
+      name: worker-db-storage
+      mountPath: /data
+      sizeGB: 1
