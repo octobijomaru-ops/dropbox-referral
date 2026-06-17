@@ -21,11 +21,7 @@ services:
       - key: NEXT_PUBLIC_WORKER_URL
         sync: false
       - key: DATABASE_URL
-        value: file:/data/db/custom.db
-    disk:
-      name: db-storage
-      mountPath: /data
-      sizeGB: 1
+        value: file:./db/custom.db
   - type: worker
     name: dropbox-referral-worker
     runtime: node
@@ -42,8 +38,6 @@ services:
       - key: PORT
         value: 10001
       - key: DATABASE_URL
-        value: file:/data/db/custom.db
-    disk:
-      name: worker-db-storage
-      mountPath: /data
-      sizeGB: 1
+        value: file:./db/custom.db
+      - key: CORS_ORIGIN
+        value: "*"
